@@ -1,41 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Store } from '../data/store';
+import { renderGlowLetters } from '../components/GlowText';
 
 export default function Achievements() {
-  const achievements = [
-    {
-      id: 1,
-      title: 'Smart India Hackathon 2025 - 1st Runner Up',
-      category: 'National Hackathon',
-      desc: 'Built an AI-driven disaster management and rescue triage system evaluated by the Ministry of Home Affairs.',
-      date: 'Dec 2025',
-      badge: '🏆 National Finalist',
-    },
-    {
-      id: 2,
-      title: 'Best Technical Student Community Award',
-      category: 'College Honors',
-      desc: 'Awarded top technical student body for organizing 80+ technical workshops and mentoring 500+ undergraduate coders.',
-      date: 'Oct 2025',
-      badge: '⭐ Excellence',
-    },
-    {
-      id: 3,
-      title: 'Open Source Grant - ₹2,00,000',
-      category: 'Open Source',
-      desc: 'Received developer grant for our open-source automated contest evaluation and automated plagiarism detection engine.',
-      date: 'Aug 2025',
-      badge: '🚀 Community',
-    },
-    {
-      id: 4,
-      title: '1st Place - Inter-College Cyber CTF Challenge',
-      category: 'Cybersecurity',
-      desc: 'Dominated 40+ collegiate teams in a 12-hour binary exploitation, reverse engineering, and cryptography sprint.',
-      date: 'May 2025',
-      badge: '🛡️ 1st Place',
-    },
-  ];
+  const [achievements, setAchievements] = useState(() => Store.getAchievements());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setAchievements(Store.getAchievements());
+    };
+    window.addEventListener('vecoders_store_update', handleUpdate);
+    return () => window.removeEventListener('vecoders_store_update', handleUpdate);
+  }, []);
 
   return (
     <div className="achievements-page">
@@ -45,18 +22,20 @@ export default function Achievements() {
         <div className="blogs-page-hero__glow-tl" />
         <div className="blogs-page-hero__title-wrap" id="blogsHeroTitle">
           <h1>
-            <span className="blogs-page-hero__white">V</span>
-            <span className="blogs-page-hero__accent">E</span>
-            <span className="blogs-page-hero__white">CODERS</span>
+            {renderGlowLetters('VECODERS', 'glow-purple')}
           </h1>
-          <h2>ACHIEVEMENTS</h2>
+          <h2 style={{ letterSpacing: '6px' }}>
+            {renderGlowLetters('ACHIEVEMENTS', 'glow-purple')}
+          </h2>
         </div>
       </section>
 
       {/* ========== ACHIEVEMENTS CONTENT ========== */}
       <section className="blogs-page-content" style={{ minHeight: '60vh' }}>
         <div className="container">
-          <h2 className="blogs-page__section-title">Our Milestones & Accolades</h2>
+          <h2 className="blogs-page__section-title">
+            {renderGlowLetters('Our Milestones & Accolades', 'glow-purple')}
+          </h2>
 
           <div
             style={{

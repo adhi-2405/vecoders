@@ -1,13 +1,23 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { EVENTS_DATA } from '../data/eventsData';
+import { Store } from '../data/store';
+import { renderGlowLetters } from '../components/GlowText';
 
 export default function Events() {
+  const [eventsList, setEventsList] = useState(() => Store.getEvents());
   const [activeTab, setActiveTab] = useState('live');
   const [searchTerm, setSearchTerm] = useState('');
 
+  useEffect(() => {
+    const handleUpdate = () => {
+      setEventsList(Store.getEvents());
+    };
+    window.addEventListener('vecoders_store_update', handleUpdate);
+    return () => window.removeEventListener('vecoders_store_update', handleUpdate);
+  }, []);
+
   const filteredEvents = useMemo(() => {
-    return EVENTS_DATA.filter((ev) => {
+    return eventsList.filter((ev) => {
       const isLiveMatch = activeTab === 'live' ? ev.isLive : !ev.isLive;
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
@@ -17,7 +27,7 @@ export default function Events() {
         (ev.tagline && ev.tagline.toLowerCase().includes(searchLower));
       return isLiveMatch && matchesSearch;
     });
-  }, [activeTab, searchTerm]);
+  }, [eventsList, activeTab, searchTerm]);
 
   return (
     <div className="events-page">
@@ -25,11 +35,11 @@ export default function Events() {
       <section className="events-page-hero">
         <div className="events-page-hero__perspective" id="eventsPerspective" />
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
-          <h1 style={{ fontFamily: 'var(--font-impact)', fontSize: 'clamp(3rem, 8vw, 6rem)', letterSpacing: '8px', color: 'var(--cream)' }}>
-            EVENTS & HACKATHONS
+          <h1 style={{ fontFamily: 'var(--font-impact)', fontSize: 'clamp(2.8rem, 7.5vw, 5.5rem)', letterSpacing: '6px', color: 'var(--cream)', margin: '0 0 10px 0' }}>
+            {renderGlowLetters('EVENTS & HACKATHONS', 'glow-cyan')}
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', letterSpacing: '2px' }}>
-            Compete, Build, Innovate with VECODERS
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', letterSpacing: '2px', margin: 0 }}>
+            {renderGlowLetters('Compete, Build, Innovate with VECODERS', 'glow-cyan')}
           </p>
         </div>
       </section>

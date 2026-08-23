@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import NoiseOverlay from './components/NoiseOverlay';
 import ScrollToTop from './components/ScrollToTop';
 import useLenis from './hooks/useLenis';
+import { Store } from './data/store';
 
 // Pages
 import Home from './pages/Home';
@@ -14,14 +15,40 @@ import Blog from './pages/Blog';
 import Timeline from './pages/Timeline';
 import Achievements from './pages/Achievements';
 import Register from './pages/Register';
+import Admin from './pages/Admin';
 
 export default function App() {
   useLenis();
+
+  const [settings, setSettings] = useState(() => Store.getSettings());
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setSettings(Store.getSettings());
+    };
+    window.addEventListener('vecoders_store_update', handleUpdate);
+    return () => window.removeEventListener('vecoders_store_update', handleUpdate);
+  }, []);
 
   return (
     <div className="app-root">
       <ScrollToTop />
       <NoiseOverlay />
+
+      {settings.announcementActive && !bannerDismissed && (
+        <div className="site-announcement-banner">
+          <span>{settings.announcementText}</span>
+          <button
+            className="site-announcement-banner__close"
+            onClick={() => setBannerDismissed(true)}
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <Navbar />
 
       <main className="main-content">
@@ -33,6 +60,7 @@ export default function App() {
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/achievements" element={<Achievements />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -41,3 +69,4 @@ export default function App() {
     </div>
   );
 }
+

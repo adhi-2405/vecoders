@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -79,6 +80,10 @@ export default function Home() {
     // Load Hero 3D Logo model from public/logo.glb
     let logoMesh = null;
     const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('/draco/');
+    loader.setDRACOLoader(dracoLoader);
+
     loader.load(
       '/logo.glb',
       (gltf) => {
@@ -93,13 +98,9 @@ export default function Home() {
 
         logoMesh.traverse((child) => {
           if (child.isMesh && child.material) {
-            child.material.roughness = 0.2;
-            child.material.metalness = 0.45;
+            child.material.roughness = 0.25;
+            child.material.metalness = 0.5;
             child.material.needsUpdate = true;
-            if (child.material.emissive) {
-              child.material.emissive = new THREE.Color(0x1a0d04);
-              child.material.emissiveIntensity = 0.35;
-            }
           }
         });
 
@@ -162,6 +163,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animId);
+      dracoLoader.dispose();
       renderer.dispose();
     };
   }, []);
@@ -195,6 +197,10 @@ export default function Home() {
     scene.add(group);
 
     const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('/draco/');
+    loader.setDRACOLoader(dracoLoader);
+
     loader.load(
       '/legacy.glb',
       (gltf) => {
@@ -209,8 +215,9 @@ export default function Home() {
 
         modelMesh.traverse((child) => {
           if (child.isMesh && child.material) {
-            child.material.roughness = 0.2;
-            child.material.metalness = 0.85;
+            child.material.roughness = 0.25;
+            child.material.metalness = 0.8;
+            child.material.needsUpdate = true;
           }
         });
 
@@ -331,6 +338,7 @@ export default function Home() {
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
       cancelAnimationFrame(animId);
+      dracoLoader.dispose();
       renderer.dispose();
     };
   }, []);

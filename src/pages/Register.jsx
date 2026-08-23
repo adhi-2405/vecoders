@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Store } from '../data/store';
+import { renderGlowLetters } from '../components/GlowText';
 
 export default function Register() {
+  const [teamName, setTeamName] = useState('');
   const [members, setMembers] = useState([
     {
       id: 1,
@@ -16,6 +19,7 @@ export default function Register() {
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const settings = Store.getSettings();
 
   const departments = [
     'Computer Science and Engineering (CSE)',
@@ -60,7 +64,6 @@ export default function Register() {
   const removeMember = (index) => {
     if (members.length <= 1) return;
     const updated = members.filter((_, idx) => idx !== index);
-    // Renumber roles
     const renumbered = updated.map((m, idx) => ({
       ...m,
       role: idx === 0 ? 'Team Lead / Member 1' : `Member ${idx + 1}`,
@@ -70,15 +73,27 @@ export default function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (settings.registrationsOpen === false) {
+      alert('Registrations are currently closed by administration.');
+      return;
+    }
     setLoading(true);
+
+    // Save to reactive store with Team Identity
+    Store.addRegistration({
+      teamName: teamName.trim() || (members[0] && members[0].name ? `${members[0].name}'s Team` : 'Team Alpha'),
+      members: members,
+    });
+
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
-    }, 900);
+    }, 800);
   };
 
   const resetForm = () => {
     setSubmitted(false);
+    setTeamName('');
     setMembers([
       {
         id: 1,
@@ -105,13 +120,13 @@ export default function Register() {
           <h1
             style={{
               fontFamily: 'var(--font-impact)',
-              fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+              fontSize: 'clamp(2.4rem, 6vw, 4.2rem)',
               letterSpacing: '4px',
               color: 'var(--cream)',
               marginBottom: '12px',
             }}
           >
-            VECODERS REGISTRATION
+            {renderGlowLetters('VECODERS REGISTRATION', 'glow-blue')}
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '580px', margin: '0 auto' }}>
             Register your team or apply individually for upcoming hackathons, tech workshops, and community access.
@@ -189,6 +204,36 @@ export default function Register() {
               boxShadow: 'var(--inset-border)',
             }}
           >
+            {/* Team Identity Header */}
+            <div
+              style={{
+                background: 'rgba(56, 189, 248, 0.05)',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                borderRadius: '18px',
+                padding: '24px',
+                marginBottom: '32px',
+              }}
+            >
+              <h3 style={{ color: '#38BDF8', fontSize: '1.1rem', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>🛡️</span> Team Identity
+              </h3>
+              <div>
+                <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px', fontWeight: '600' }}>
+                  TEAM / SQUAD NAME (OPTIONAL)
+                </label>
+                <input
+                  type="text"
+                  className="admin-form-input"
+                  placeholder="e.g. CodeWarriors, CyberKnights, QuantumLeap..."
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                />
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '6px', margin: 0 }}>
+                  If applying as an individual, you can leave this blank or provide a handle.
+                </p>
+              </div>
+            </div>
+
             {/* Members Section */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', marginBottom: '36px' }}>
               {members.map((member, index) => (

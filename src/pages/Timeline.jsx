@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { renderGlowLetters } from '../components/GlowText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -129,11 +130,11 @@ export default function Timeline() {
         <div className="timeline-hero__content" id="timelineHeroContent">
           <div className="timeline-hero__title-wrap">
             <h1>
-              <span className="timeline-hero__white">V</span>
-              <span className="timeline-hero__accent">E</span>
-              <span className="timeline-hero__white">CODERS</span>
+              {renderGlowLetters('VECODERS', 'glow-orange')}
             </h1>
-            <p className="timeline-hero__subtitle">TIMELINE</p>
+            <p className="timeline-hero__subtitle" style={{ letterSpacing: '6px' }}>
+              {renderGlowLetters('TIMELINE', 'glow-orange')}
+            </p>
           </div>
         </div>
       </section>
